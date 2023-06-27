@@ -2,9 +2,10 @@
 #include<unistd.h>
 #include <time.h>
 #include <stdio.h>
+#include <string.h>
 
 float x_c = 0.0, y_c = 1.0;
-int a[21][21];
+int grid[21][21];
 
 void init()
 {
@@ -13,20 +14,59 @@ void init()
     {
         for(j=0;j<21;j++)
         {
-            a[i][j]=0;
+            grid[i][j]=0;
         }
     }
     for(j=0;j<21;j++)
     {
-        a[20][j]=1;
+        grid[j][20]=1;
+    }
+}
+
+int test[][3]={{9,0},{11,0},{10,1}};
+int cur[3][3];
+
+void gridInit()
+{
+    int i,j;
+    for(i=0;i<3;i++)
+    {
+        for(j=0;j<3;j++)
+        {
+            cur[i][j]=test[i][j];
+        }
+    }
+}
+
+void checkGrid(){
+    cur[0][1]+=1;
+    cur[0][0]= test[0][0]+x_c*10;
+    cur[1][1]+=1;
+    cur[1][0]= test[1][0]+x_c*10;
+    cur[2][1]+=1;
+    cur[2][0]= test[2][0]+x_c*10;
+    if(grid[cur[2][0]][cur[2][1]]==1 || grid[cur[1][0]][cur[1][1]]==1 || grid[cur[0][0]][cur[0][1]]==1)
+    {
+        x_c=0.0;
+        y_c=1.0;
+        grid[cur[2][0]][cur[2][1]-2]=1;
+        grid[cur[2][0]][cur[2][1]-1]=1;
+        grid[cur[1][0]][cur[1][1]-1]=1;
+        grid[cur[0][0]][cur[0][1]-1]=1;
+        if(grid[10][0]==1)
+        {
+            exit(0);
+        }
+        gridInit();
+        glutPostRedisplay();
     }
 }
 
 void drop(int s){
     y_c -= 0.1;
     int i;
-    for(i=0; i<65000000; i++);
-    
+    for(int i=0;i<65000000;i++);
+    checkGrid();
     glutPostRedisplay();
 }
 
@@ -160,6 +200,7 @@ void arrowKeys(int key, int x, int y)
 int main(int argc, char** argv)
 {
     init();
+    gridInit();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(400, 400);
