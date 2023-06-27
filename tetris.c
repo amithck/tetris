@@ -38,6 +38,58 @@ void gridInit()
     }
 }
 
+void clearGrid()
+{
+    int i,j,k;
+    for(i=0; i<21; i++)
+    {
+        for(j=0;j<21;j++)
+        {
+            if(grid[j][i]==1)
+            {
+                glEnable(GL_SCISSOR_TEST);
+                glScissor(0,((20-i)*20),400,400);
+                glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glDisable(GL_SCISSOR_TEST);
+                goto left;
+            }
+        }
+    }
+    left:
+    for(k=i;k>0;k--)
+    {
+     for(j=0;j<21;j++)
+        {
+            if(grid[j][k]==1)
+            {
+                glEnable(GL_SCISSOR_TEST);
+                glScissor(0,k*20,j*20,20);
+                glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glDisable(GL_SCISSOR_TEST);
+                goto right;
+            }
+        }   
+    }
+    right:
+    for(k=i;k>0;k--)
+    {
+     for(j=20;j>=0;j--)
+        {
+            if(grid[j][k]==1)
+            {
+                glEnable(GL_SCISSOR_TEST);
+                glScissor(j*20,k*20,400,20);
+                glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glDisable(GL_SCISSOR_TEST);
+                return;
+            }
+        }   
+    }
+}
+
 void checkGrid(){
     cur[0][1]+=1;
     cur[0][0]= test[0][0]+x_c*10;
@@ -57,9 +109,11 @@ void checkGrid(){
         {
             exit(0);
         }
+        clearGrid();
         gridInit();
         glutPostRedisplay();
     }
+    clearGrid();
 }
 
 void drop(int s){
@@ -176,8 +230,6 @@ void display(){
     srand((unsigned) time(&ti));
     a = rand() % 7;
     (*f[6])(x_c, y_c);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drop(6);
 }
 
